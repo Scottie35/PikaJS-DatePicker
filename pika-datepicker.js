@@ -4,7 +4,7 @@
  * 	MIT License
  */
 
-(function($) {
+(function($, gD, gM, gFY) {
 
 	$.datePicker = {
 		Version: '1.0',
@@ -93,7 +93,7 @@
 				return false;
 			});
 			this.cal._on('change', '.month_name select', function() {
-				that.moveMonthBy(parseInt(this.val()) - that.currentMonth.getMonth());
+				that.moveMonthBy(parseInt(this.val()) - that.currentMonth[gM]());
 				that.pauseEvents = false;
 				return false;
 			});
@@ -105,7 +105,7 @@
 				return false;
 			});
 			this.cal._on('change', '.year_name select', function() {
-				that.moveMonthBy((parseInt(this.val()) - that.currentMonth.getFullYear())*12);
+				that.moveMonthBy((parseInt(this.val()) - that.currentMonth[gFY]())*12);
 				that.pauseEvents = false;
 				return false;
 			});
@@ -146,35 +146,35 @@
 		},
 
 		selectMonth: function(date) {
-			var newMonth = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-			if (this.isNewDateAllowed(newMonth)) {
-				if (!this.currentMonth || !(this.currentMonth.getFullYear() == newMonth.getFullYear() && this.currentMonth.getMonth() == newMonth.getMonth())) {
+			var newMonth = new Date(date[gFY](), date[gM](), date[gD]());
+			if (this.dateAllowed(newMonth)) {
+				if (!this.currentMonth || !(this.currentMonth[gFY]() == newMonth[gFY]() && this.currentMonth[gM]() == newMonth[gM]())) {
 					this.currentMonth = newMonth;
 					var rangeStart = this.rangeStart(date), rangeEnd = this.rangeEnd(date);
 					var numDays = this.daysBetween(rangeStart, rangeEnd);
 					var dayCells = '';
 					for (var i=0; i <= numDays; i++) {
-						var currentDay = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate() + i, 12, 0);
+						var currentDay = new Date(rangeStart[gFY](), rangeStart[gM](), rangeStart[gD]() + i, 12, 0);
 						if (currentDay.getDay() == this.start_of_week) {
 							var firstDayOfWeek = currentDay;
-							var lastDayOfWeek = new Date(currentDay.getFullYear(), currentDay.getMonth(), currentDay.getDate()+6, 12, 0);
+							var lastDayOfWeek = new Date(currentDay[gFY](), currentDay[gM](), currentDay[gD]()+6, 12, 0);
 							dayCells += '<div class="week">';
 						}
 						var klass = 'unselected_month';
-						if (currentDay.getMonth() == date.getMonth() && this.isNewDateAllowed(currentDay) && !this.isHoliday(currentDay)) {
+						if (currentDay[gM]() == date[gM]() && this.dateAllowed(currentDay) && !this.isHoliday(currentDay)) {
 							klass = 'selectable_day';
 							if (this.weekend_days.indexOf(currentDay.getDay()) > -1) {
 								klass += ' weekend';
 							}
 						}
-						dayCells += '<div class="' + klass + '" data-date="' + this.dateToString(currentDay) + '">' + currentDay.getDate() + '</div>';
+						dayCells += '<div class="' + klass + '" data-date="' + this.dateToString(currentDay) + '">' + currentDay[gD]() + '</div>';
 						if (currentDay.getDay() == (this.start_of_week + 6) % 7) {
 							dayCells += "</div>";
 						}
 					}
 					this.cal.find('.body').html(dayCells);
-					this.cal.find('.month_name').html(this.month_names[date.getMonth()]);
-					this.cal.find('.year_name').html(this.currentMonth.getFullYear());
+					this.cal.find('.month_name').html(this.month_names[date[gM]()]);
+					this.cal.find('.year_name').html(this.currentMonth[gFY]());
 					this.cal.find("div[data-date='" + this.dateToString(new Date()) + "']").addClass("today");
 				}
 				this.cal.find('.selected').each(function() {
@@ -191,9 +191,9 @@
 		selectDate: function(date) {
 			if ($.t(date)) { date = this.stringToDate(this.input.val()); }
 			if (!date) { date = new Date(); }
-			if (this.isNewDateAllowed(date)) {
+			if (this.dateAllowed(date)) {
 				this.selectedDate = date;
-				this.currentYear = date.getFullYear();
+				this.currentYear = date[gFY]();
 				this.selectedDateString = this.dateToString(this.selectedDate);
 				this.selectMonth(this.selectedDate);
 			} else if ((this.date_min) && this.daysBetween(this.date_min, date) < 0) {
@@ -207,7 +207,7 @@
 			}
 		},
 
-		isNewDateAllowed: function(date){
+		dateAllowed: function(date){
 			return (!this.date_min || this.daysBetween(this.date_min, date) >= 0) && (!this.date_max || this.daysBetween(date, this.date_max) >= 0);
 		},
 
@@ -273,7 +273,7 @@
 						return;
 						break;
 					case 13: // enter
-						if (that.isNewDateAllowed(that.stringToDate(that.selectedDateString)) && !that.isHoliday(that.stringToDate(that.selectedDateString))) {
+						if (that.dateAllowed(that.stringToDate(that.selectedDateString)) && !that.isHoliday(that.stringToDate(that.selectedDateString))) {
 							that.changeInput(that.selectedDateString);
 						}
 						break;
@@ -393,7 +393,7 @@
 		},
 
 		dateToString: function(date) {
-			var dd = this.strpad(date.getDate()), FF = this.month_names[date.getMonth()], mm = this.strpad(date.getMonth()+1), MM = this.short_month_names[date.getMonth()], YYYY = date.getFullYear();
+			var dd = this.strpad(date[gD]()), FF = this.month_names[date[gM]()], mm = this.strpad(date[gM]()+1), MM = this.short_month_names[date[gM]()], YYYY = date[gFY]();
 			switch (this.date_format) {
 				case "dd/mm/YYYY": 
 					return dd + "/" + mm + "/" + YYYY;
@@ -418,7 +418,7 @@
 		},
 
 		dateToShortString: function(date){
-			var dd = this.strpad(date.getDate()), FF = this.month_names[date.getMonth()], mm = this.strpad(date.getMonth()+1), MM = this.short_month_names[date.getMonth()];
+			var dd = this.strpad(date[gD]()), FF = this.month_names[date[gM]()], mm = this.strpad(date[gM]()+1), MM = this.short_month_names[date[gM]()];
 			switch (this.date_format) {
 				case "dd/mm/YYYY": 
 					return dd + "/" + mm;
@@ -443,13 +443,13 @@
 		},
 
 		moveDateBy: function(amount) {
-			var newDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), this.selectedDate.getDate() + amount);
+			var newDate = new Date(this.selectedDate[gFY](), this.selectedDate[gM](), this.selectedDate[gD]() + amount);
 			this.selectDate(newDate);
 		},
 
 		moveDateMonthBy: function(amount) {
-			var newDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + amount, this.selectedDate.getDate());
-			if (newDate.getMonth() == this.selectedDate.getMonth() + amount + 1) {
+			var newDate = new Date(this.selectedDate[gFY](), this.selectedDate[gM]() + amount, this.selectedDate[gD]());
+			if (newDate[gM]() == this.selectedDate[gM]() + amount + 1) {
 				newDate.setDate(0);
 			};
 			this.selectDate(newDate);
@@ -458,13 +458,13 @@
 		moveMonthBy: function(amount) {
 			var amt = (amount < 0) ? amount + 1 : amount;
 			var day = (amount < 0) ? -1 : 1;
-			this.selectMonth(new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + amt, day));
+			this.selectMonth(new Date(this.currentMonth[gFY](), this.currentMonth[gM]() + amt, day));
 		},
 
 		getMonthSelect: function() {
 			var month_select = '<select>', sel = '';
 			for (var i = 0; i < this.month_names.length; i++) {
-				if (i == this.currentMonth.getMonth()) {
+				if (i == this.currentMonth[gM]()) {
 					sel = ' selected="selected"';
 				}
 				month_select += '<option value="' + i + '"' + sel + '>' + this.month_names[i] + '</option>';
@@ -474,30 +474,30 @@
 
 		getYearSelect: function() {
 			var year_select = '<select>', sel;
-			for (var i = this.date_min.getFullYear(); i <= this.date_max.getFullYear(); i++) {
-				sel = (i == this.currentMonth.getFullYear()) ? ' selected="selected"' : '';
+			for (var i = this.date_min[gFY](); i <= this.date_max[gFY](); i++) {
+				sel = (i == this.currentMonth[gFY]()) ? ' selected="selected"' : '';
 				year_select += '<option value="' + i + '"' + sel + '>' + i + '</option>';
 			}
 			return year_select + '</select>';
 		},
 
 		daysBetween: function(start, end) {
-			start = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
-			end = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+			start = Date.UTC(start[gFY](), start[gM](), start[gD]());
+			end = Date.UTC(end[gFY](), end[gM](), end[gD]());
 			return (end - start) / 86400000;
 		},
 
 		changeDayTo: function(dayOfWeek, date, direction) {
 			var difference = direction * (Math.abs(date.getDay() - dayOfWeek - (direction * 7)) % 7);
-			return new Date(date.getFullYear(), date.getMonth(), date.getDate() + difference);
+			return new Date(date[gFY](), date[gM](), date[gD]() + difference);
 		},
 
 		rangeStart: function(date) {
-			return this.changeDayTo(this.start_of_week, new Date(date.getFullYear(), date.getMonth()), -1);
+			return this.changeDayTo(this.start_of_week, new Date(date[gFY](), date[gM]()), -1);
 		},
 
 		rangeEnd: function(date) {
-			return this.changeDayTo((this.start_of_week - 1) % 7, new Date(date.getFullYear(), date.getMonth() + 1, 0), 1);
+			return this.changeDayTo((this.start_of_week - 1) % 7, new Date(date[gFY](), date[gM]() + 1, 0), 1);
 		},
 
 		show_error: function(error) {
@@ -529,4 +529,4 @@
 		}
 	});
 
-})(Pika); 
+})(Pika, 'getDate', 'getMonth', 'getFullYear'); 
