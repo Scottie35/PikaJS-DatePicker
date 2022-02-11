@@ -1,6 +1,6 @@
 # PikaJS-DatePicker
 
-Datepicker plugin for PikaJS that is **11.6KB** minified. Yeah, it's hard to make a datepicker teeny-tiny... They're complicated.
+Datepicker plugin for PikaJS that is **11.2KB** minified. Yeah, it's hard to make a datepicker teeny-tiny... They're complicated.
 
 ## What is PikaJS?
 
