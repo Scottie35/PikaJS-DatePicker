@@ -6,7 +6,7 @@ Datepicker plugin for PikaJS that is **11.2KB** minified. Yeah, it's hard to mak
 
 [PikaJS](https://github.com/Scottie35/PikaJS) is a client-side scripting library like jQuery, but 7 times smaller, faster, and more efficient.
 
-**You must include PikaJS before adding PikaJS Hotkeys to your page!**
+**You must include PikaJS before adding PikaJS Datepicker to your page!**
 
 ## What does it do?
 
