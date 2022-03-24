@@ -112,7 +112,7 @@ The file `pika-datepicker.css` contains the default styles for the calendar. Cus
 
 You can run `.datePicker` on any number of INPUT fields on a given page.
 
-In fact, you can pass a PikaJS Object of any numer of INPUT elements, and each of them will be datePicker-ified.
+In fact, you can pass a PikaJS Object of any number of INPUT elements, and each of them will be datePicker-ified.
 
 While DatePicker validates the format and range of the date based on the options given, don't forget to validate the date and convert it server-side into the proper format for database storage!
 
