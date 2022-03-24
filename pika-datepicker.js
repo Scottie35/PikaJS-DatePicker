@@ -1,5 +1,5 @@
 /** 
- *	@license PikaJS DatePicker plugin 1.0
+ *	@license PikaJS DatePicker plugin 1.0.1
  *	© 2022 Scott Ogrin
  * 	MIT License
  */
@@ -7,7 +7,7 @@
 (function($, gD, gM, gFY) {
 
 	$.datePicker = {
-		Version: '1.0',
+		Version: '1.0.1',
 		defaults: {
 			month_names: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 			short_month_names: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -62,19 +62,22 @@
 			this.cal.find('.head').html(letterDays);
 			// Populate calendar with input or current Date
 			this.selectDate();
-			// Adjust cal size based on input field
+			// Adjust cal size based on input field (now and if window is resized!)
 			datsel = this.cal.find('.date_selector');
-			datsel.css({opacity: 0}).show();
-			if (this.input.width() > 210) {
-				var padbord = parseInt(datsel.css('padding-right')) + parseInt(datsel.css('padding-left')) + parseInt(datsel.css('border-right-width')) + parseInt(datsel.css('border-left-width'));
-				datsel.css({width: this.input.width() - padbord + 'px'});
-				var cellht = datsel.find('.selectable_day').first().height();
-				// Default cellht = 30px at calwd = 210px; Increase font em by 0.02 per extra px height
-				if (cellht > 30) {
-					this.cal.css({'font-size': 1 + 0.02 * (cellht - 30) + 'em'});					
+			$(window).on('resize', function() {
+				datsel.css({opacity: 0}).show();
+				if (that.input.width() > 210) {
+					var padbord = parseInt(datsel.css('padding-right')) + parseInt(datsel.css('padding-left')) + parseInt(datsel.css('border-right-width')) + parseInt(datsel.css('border-left-width'));
+					datsel.css({width: that.input.width() - padbord + 'px'});
+					var cellht = datsel.find('.selectable_day').first().height();
+					// Default cellht = 30px at calwd = 210px; Increase font em by 0.02 per extra px height
+					if (cellht > 30) {
+						that.cal.css({'font-size': 1 + 0.02 * (cellht - 30) + 'em'});					
+					}
 				}
-			}
-			datsel.hide().css({opacity: ''});
+				datsel.hide().css({opacity: ''});
+			});
+			window.dispatchEvent(new Event('resize'));
 			// Attach Event Handlers
 			// 'this' is $(el) from Pika ._on(), 'that' is datePicker obj
 			this.cal._on('mousedown', '.month_nav .prev', function() {
@@ -233,7 +236,6 @@
 			this.pauseEvents = that.pauseEvents = false;
 			this.cal.find('.error_msg').css({display: 'none'});
 			this.input.off('focus.cal' + this.randID);
-			// this.cal.find('.cal-btn').off('click.calBtn' + this.randID);
 			this.input.attr('readonly', true);
 			// Set position:
 			if ($.t(this.on_show, 'f')) {
@@ -255,6 +257,8 @@
 					});
 				}
 				datsel.css({opacity: ''});
+				// If pos doesn't work:
+				datsel.scrollTo();
 			}
 			// Temporary Event listeners
 			$(document).on('mousedown.calClose' + this.randID, function(evt) {
