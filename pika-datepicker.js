@@ -258,7 +258,7 @@
 				}
 				datsel.css({opacity: ''});
 				// If pos doesn't work:
-				datsel.scrollTo();
+				if ($.animate) { datsel.scrollTo(); }
 			}
 			// Temporary Event listeners
 			$(document).on('mousedown.calClose' + this.randID, function(evt) {
