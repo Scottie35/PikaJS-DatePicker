@@ -478,7 +478,7 @@
 
 		getYearSelect: function() {
 			var year_select = '<select>', sel;
-			for (var i = this.date_min[gFY](); i <= this.date_max[gFY](); i++) {
+			for (var i = ((this.date_min) ? this.date_min[gFY]() : 1970); i <= ((this.date_max) ? this.date_max[gFY]() : 2100); i++) {
 				sel = (i == this.currentMonth[gFY]()) ? ' selected="selected"' : '';
 				year_select += '<option value="' + i + '"' + sel + '>' + i + '</option>';
 			}
