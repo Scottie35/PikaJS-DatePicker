@@ -2,6 +2,8 @@
 
 Datepicker plugin for PikaJS that is **11.2KB** minified. Yeah, it's hard to make a datepicker teeny-tiny... They're complicated.
 
+[Try the PikaJS Demo!](https://pikajs.com/)
+
 ## What is PikaJS?
 
 [PikaJS](https://github.com/Scottie35/PikaJS) is a client-side scripting library like jQuery, but 7 times smaller, faster, and more efficient.
@@ -115,5 +117,7 @@ You can run `.datePicker` on any number of INPUT fields on a given page.
 In fact, you can pass a PikaJS Object of any number of INPUT elements, and each of them will be datePicker-ified.
 
 While DatePicker validates the format and range of the date based on the options given, don't forget to validate the date and convert it server-side into the proper format for database storage!
+
+[Try the PikaJS Demo!](https://pikajs.com/)
 
 **That's all, folks!**
